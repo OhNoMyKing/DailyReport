@@ -1,5 +1,6 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Role } from "../roles/role.entity";
+import { Cart } from "../cart/cart.entity";
 
 @Entity('users')
 export class User{
@@ -11,7 +12,7 @@ export class User{
     password:string;
     @Column({name:'active', default: true})
     isActive: boolean;
-    //
+    //Realation Role
     @ManyToMany(()=>Role)
     @JoinTable({
         name:'user_role',
@@ -25,4 +26,7 @@ export class User{
         },
     })
     roles:Role[];
+    //Realation Cart
+    @OneToOne(() => Cart, (cart) => cart.user)
+    cart : Cart;
 }

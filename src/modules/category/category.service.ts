@@ -30,11 +30,14 @@ export class CategoryService{
             console.log(categoryDto);
             const query =`
             INSERT INTO category(name,description)
-            VALUES($1,$2);
+            VALUES($1,$2)
+            RETURNING *
         `
         const value  = [categoryDto.name,categoryDto.description];
+        console.log(value);
         const createCategory = await this.categoryRepository.query(query,value);
-        createdCategories.push(createCategory);
+        createdCategories.push(createCategory[0]);
+        console.log(createdCategories);
         }
         return createdCategories;
     }
@@ -89,12 +92,13 @@ export class CategoryService{
         return result2;
     }
     //findcategoryByname
-    async findCategoryByName(name:string) : Promise<Category>{
+    async findCategoryByName(name:string) : Promise<Category[]>{
         const query =
         `
             SELECT * FROM category WHERE name = $1
         `
         const categories = await this.entityManager.query(query,[name]);
+        console.log(categories);
         console.log(query);
         if(!categories){
             throw new Error('loi tim name category');

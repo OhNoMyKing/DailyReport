@@ -1,7 +1,5 @@
-import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
 import appConfig from './config/app.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import databaseConfig from './config/database.config';
@@ -12,10 +10,18 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtAuthGuard } from './common/guards/jwt-auth-guard';
 import { AdminModule } from './modules/admin/admin.module';
 import { ProductModule } from './modules/products/product.module';
+
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { CACHE_MANAGER, CacheModule } from '@nestjs/cache-manager';
 import { CategoryModule } from './modules/category/category.module';
+import { RedisModule } from './cache/redis.module';
+import * as redisStore from 'cache-manager-ioredis'; // Không cần sửa
+import { ProductSubscriber } from './modules/products/product.subscriber';
 
 @Module({
   imports: [
+    RedisModule,
     ConfigModule.forRoot({
       load: [appConfig, databaseConfig],
       isGlobal: true,
@@ -24,17 +30,18 @@ import { CategoryModule } from './modules/category/category.module';
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         type: 'postgres',
-        host: 'localhost', // Sửa đổi ở đây
+        host: 'localhost',
         port: 5432,
-        username: 'postgres', // Sửa đổi ở đây
-        password: '12052002', // Sửa đổi ở đây
-        database: 'vebo', // Sửa đổi ở đây
+        username: 'postgres',
+        password: '12052002',
+        database: 'vebo',
         synchronize: false,
         autoLoadEntities: true,
         migrations: [__dirname + '/../migrations/*{.ts,.js}'],
         cli: {
           migrationsDir: 'src/migrations',
-        }
+        },
+        subscribers: [ProductSubscriber],
       }),
     }),
     ProductModule,
@@ -45,6 +52,6 @@ import { CategoryModule } from './modules/category/category.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService,JwtAuthGuard],
+  providers: [AppService, JwtAuthGuard],
 })
 export class AppModule {}
