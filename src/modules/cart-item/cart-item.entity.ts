@@ -1,5 +1,5 @@
 import { PrimaryGeneratedColumn, Entity, JoinColumn, ManyToOne, Column } from "typeorm";
-import { Cart } from "./cart.entity";
+import { Cart } from "../cart/cart.entity";
 import { Product } from "../products/product.entity";
 @Entity({name : 'cart_item'})
 export class CartItem{
@@ -18,4 +18,7 @@ export class CartItem{
 
     @Column({name: 'price_at_add_time', type: 'decimal', precision:10,scale:2})
     priceAddTime : number;
+    
+    @Column({name: 'subtotal', type: 'decimal', precision: 10, scale: 2})
+    subtotal: number;
 }

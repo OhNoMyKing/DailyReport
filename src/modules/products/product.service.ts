@@ -147,5 +147,11 @@ export class ProductService{
         const updatedProduct = await this.productRepository.save(product);
         return updatedProduct;
     }
+    //findProductById
+    async findProductById(id : number) : Promise<Product>{
+        return this.productRepository.findOne({
+            where : {id},
+        })
+    }
     
 }

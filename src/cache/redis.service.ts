@@ -25,6 +25,8 @@ export class RedisService{
     //clear
     async clearCache(key: string) : Promise<void>{
         await this.cacheManager.del(key);
+
+        
         console.log(`Cache with key ${key} cleared`);
     }
 }

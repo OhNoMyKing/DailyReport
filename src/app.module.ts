@@ -18,6 +18,8 @@ import { CategoryModule } from './modules/category/category.module';
 import { RedisModule } from './cache/redis.module';
 import * as redisStore from 'cache-manager-ioredis'; // Không cần sửa
 import { ProductSubscriber } from './modules/products/product.subscriber';
+import { CartModule } from './modules/cart/cart.module';
+import { CartItemModule } from './modules/cart-item/cart-item.module';
 
 @Module({
   imports: [
@@ -35,7 +37,7 @@ import { ProductSubscriber } from './modules/products/product.subscriber';
         username: 'postgres',
         password: '12052002',
         database: 'vebo',
-        synchronize: false,
+        synchronize: true,
         autoLoadEntities: true,
         migrations: [__dirname + '/../migrations/*{.ts,.js}'],
         cli: {
@@ -50,6 +52,8 @@ import { ProductSubscriber } from './modules/products/product.subscriber';
     UserModule,
     RoleModule,
     AuthModule,
+    CartModule,
+    CartItemModule
   ],
   controllers: [AppController],
   providers: [AppService, JwtAuthGuard],

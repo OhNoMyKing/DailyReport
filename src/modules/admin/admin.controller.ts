@@ -1,9 +1,10 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorators';
 import { RoleEnum } from 'src/common/enum/roles.enum';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth-guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-
+@ApiTags('admin')
 @Controller('admin')
 @UseGuards(JwtAuthGuard,RolesGuard) // Áp dụng guard cho toàn bộ controller
 export class AdminController {

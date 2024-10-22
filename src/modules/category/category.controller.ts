@@ -2,6 +2,8 @@ import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { CategoryService } from "./category.service";
 import { Category } from "./category.entity";
 import { addCategoryDto } from "./dto/addCategoryDto";
+import { ApiTags } from "@nestjs/swagger";
+@ApiTags('category')
 @Controller('category')
 export class CategoryController{
     constructor(private categoryService : CategoryService){}
