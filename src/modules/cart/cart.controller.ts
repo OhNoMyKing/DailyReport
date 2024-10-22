@@ -22,4 +22,10 @@ export class CartController{
     async findAllCart(@Param('id') id : number){
         return this.cartService.getCart(id);
     }
+    @Post('add2')
+    @UseGuards(JwtAuthGuard)
+    async addProductToCart2(@Request() req, @Body() body : {productId: number, quantity: number}){
+        const userId = req.user.id;
+        this.cartService.addProductToCart(userId,body.productId,body.quantity);
+    }
 }
