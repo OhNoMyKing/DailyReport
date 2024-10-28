@@ -5,32 +5,44 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Attach to Chrome",
-            "port": 9222,
+            "name": "Attach",
+            "port": 9229,
             "request": "attach",
-            "type": "chrome",
-            "webRoot": "${workspaceFolder}"
-        },
-        {
-            "type": "node",
-            "name": "vscode-jest-tests.v2.project_intern",
-            "request": "launch",
-            "args": [
-                "--runInBand",
-                "--watchAll=false",
-                "--testNamePattern",
-                "${jest.testNamePattern}",
-                "--runTestsByPath",
-                "${jest.testFile}"
+            "skipFiles": [
+                "<node_internals>/**"
             ],
-            "cwd": "${workspaceFolder}",
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
-            "disableOptimisticBPs": true,
-            "program": "${workspaceFolder}/node_modules/.bin/jest",
-            "windows": {
-                "program": "${workspaceFolder}/node_modules/jest/bin/jest"
-            }
-        }
+            "type": "node"
+        },
+        
+        
+        
+        // {
+        //     "name": "Attach to Chrome",
+        //     "port": 9222,
+        //     "request": "attach",
+        //     "type": "chrome",
+        //     "webRoot": "${workspaceFolder}"
+        // },
+        // {
+        //     "type": "node",
+        //     "name": "vscode-jest-tests.v2.project_intern",
+        //     "request": "launch",
+        //     "args": [
+        //         "--runInBand",
+        //         "--watchAll=false",
+        //         "--testNamePattern",
+        //         "${jest.testNamePattern}",
+        //         "--runTestsByPath",
+        //         "${jest.testFile}"
+        //     ],
+        //     "cwd": "${workspaceFolder}",
+        //     "console": "integratedTerminal",
+        //     "internalConsoleOptions": "neverOpen",
+        //     "disableOptimisticBPs": true,
+        //     "program": "${workspaceFolder}/node_modules/.bin/jest",
+        //     "windows": {
+        //         "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+        //     }
+        // }
     ]
 }

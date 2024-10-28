@@ -16,9 +16,9 @@ export class CartItem{
     @Column({name : 'quantity', type:'int'})
     quantity : number;
 
-    @Column({name: 'price_at_add_time', type: 'decimal', precision:10,scale:2})
+    @Column({name: 'price_at_add_time', type: 'int'})
     priceAddTime : number;
     
-    @Column({name: 'subtotal', type: 'decimal', precision: 10, scale: 2})
+    @Column({name: 'subtotal', type: 'int'})
     subtotal: number;
 }

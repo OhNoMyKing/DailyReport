@@ -22,4 +22,9 @@ export class ProductController{
     async updateProduct(@Param('id')id : number,@Body() updateProduct : UpdateProductDto){
         return this.productService.updateProduct2(id,updateProduct);
     }
+    @Get('count')
+    async getProductCount() : Promise<number>{
+        const count  = this.productService.getProductsToCount();
+        return count;
+    }
 }

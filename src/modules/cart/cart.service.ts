@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { Cart } from "./cart.entity";
 import { InjectConnection, InjectDataSource, InjectRepository} from "@nestjs/typeorm";
-import { Connection, DataSource, Repository } from "typeorm";
+import { Connection, DataSource, EntityManager, Repository } from "typeorm";
 import { CartItemService } from "../cart-item/cart-item.service";
 import { CartItem } from "../cart-item/cart-item.entity";
 import { ProductService } from "../products/product.service";
@@ -13,6 +13,7 @@ export class CartService{
         private cartRepository : Repository<Cart>,
         private cartItemService : CartItemService,
         private productService : ProductService,
+        private entityManager : EntityManager,
         @InjectDataSource()
         private readonly dataSource : DataSource
     ){}
@@ -51,6 +52,30 @@ export class CartService{
         }
         return cartUser;
     }    
+
+    async getCartById(cartId : number) : Promise<Cart>{
+        // const query = `
+        //     SELECT * FROM carts
+        //     WHERE id = $1
+        // `
+        // const cart = await this.entityManager.query(query,[cartId]);
+        // if(!cart){
+        //     throw new Error('Cart not found');
+        // }
+        // return cart;
+        const cart = await this.cartRepository.findOne({
+            where : {
+                id : cartId
+            },
+            relations:['user','cartItems','cartItems.product'],
+        }
+        );
+        console.log(cart);
+        if(!cart){
+            throw new Error ('cart not found');
+        }
+        return cart;
+    }
     
     async updateCartItem(userId :number, productId : number, quantity : number) {
         const cartUser = await this.cartRepository.findOne({
@@ -83,12 +108,13 @@ export class CartService{
         await this.cartRepository.save(cartUser);
     }
 
-    async addProductToCart2(userId: number, productId: number, quantity: number){
+    async addProductToCart2(userId: number, productId: number, quantity: number) {
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
-
-        try{
+    
+        try {
+            // Thay đổi ở đây: Chúng ta sẽ thực hiện câu lệnh query của PL/pgSQL không cần tham số từ bên ngoài
             await queryRunner.query(`
                 DO $$
                 DECLARE
@@ -97,55 +123,54 @@ export class CartService{
                     price DECIMAL(10,2);
                     existing_cart_item_id INT;
                 BEGIN
-                    --1.Lay cart tu user_id
+                    -- Bước 1: Lấy giỏ hàng từ user_id
                     SELECT id INTO cart_id FROM cart WHERE user_id = $1 FOR UPDATE;
-                    --2.Neu khong co gio hang, tao gio hang moi
+    
+                    -- Bước 2: Nếu không có giỏ hàng, tạo giỏ hàng mới
                     IF cart_id IS NULL THEN
                         INSERT INTO cart (user_id) VALUES ($1) RETURNING id INTO cart_id;
                     END IF;
-
-                    -- 3. Kiem tra so luong ton kho
-                    SELECT stock,price INTO stock,price
-                    FROM product
-                    WHERE id = $2 FOR UPDATE;
-                    --Neu product khong ton tai
+    
+                    -- Bước 3: Kiểm tra số lượng tồn kho
+                    SELECT stock, price INTO stock, price FROM product WHERE id = $2 FOR UPDATE;
+    
+                    -- Nếu sản phẩm không tồn tại
                     IF stock IS NULL THEN
-                        RAISE EXCEPTION 'product not found';
+                        RAISE EXCEPTION 'Product not found';
                     END IF;
-
-                    --kiem tra so luong ton kho--
+    
+                    -- Kiểm tra số lượng tồn kho
                     IF stock < $3 THEN
-                        RAISE EXCEPTION 'Product khong du cho yeu cau cua ban';
+                        RAISE EXCEPTION 'Not enough stock for the requested quantity';
                     END IF;
-                    -- 4 Kiem tra san pham trong gio hang
-                    SELECT id INTO existing_cart_item_id
-                    FROM cart_item
-                    WHERE cart_id = cart_id AND product_id = $2;
-                    --5 Neu product da co trong gio hang
-                    IF existing_cart_item id IS NOT NULL THEN
-                        IF(SELECT quantity FROM cart_item WHERE id = existing_cart_item_id) + $3 > stock THEN
-                            RAISE EXCEPTION 'So luong khi them vuot qua product';
+    
+                    -- Bước 4: Kiểm tra sản phẩm trong giỏ hàng
+                    SELECT id INTO existing_cart_item_id FROM cart_item WHERE cart_id = cart_id AND product_id = $2;
+    
+                    -- Bước 5: Nếu sản phẩm đã có trong giỏ hàng
+                    IF existing_cart_item_id IS NOT NULL THEN
+                        IF (SELECT quantity FROM cart_item WHERE id = existing_cart_item_id) + $3 > stock THEN
+                            RAISE EXCEPTION 'Quantity exceeds available stock';
                         END IF;
-                        UPDATE cart_item
-                        SET quantity = quantity + $3
-                        WHERE id = existing_cart_item_id;
+                        UPDATE cart_item SET quantity = quantity + $3 WHERE id = existing_cart_item_id;
                     ELSE
-                        --tao san pham product vao gio hang
-                        INSERT INTO cart_item (cart_id, product_id,quantity,price_add_time)
-                        VALUES (cart_id, $2,$3,price);
+                        -- Tạo sản phẩm vào giỏ hàng
+                        INSERT INTO cart_item (cart_id, product_id, quantity, price_add_time) VALUES (cart_id, $2, $3, price);
                     END IF;
-
-                    --Commit Transaction
-                    COMMIT;
+    
                 END $$;
-
-            `,[userId,productId,quantity]);
-            return {message : 'Product added to cart successfully'};
-        } catch(error){
+            `, [userId, productId, quantity]);
+    
+            // Commit transaction
+            await queryRunner.commitTransaction();
+    
+            return { message: 'Product added to cart successfully' };
+        } catch (error) {
             await queryRunner.rollbackTransaction();
             throw new InternalServerErrorException(error.message);
-        }  finally{
+        } finally {
             await queryRunner.release();
         }
     }
+    
 }

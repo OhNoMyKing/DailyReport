@@ -29,10 +29,14 @@ export class CartItemService{
         console.log(product);
         console.log(productId);
         //Kiem tra xem product da co trong gio hang hay chua
-        const existingCartItem = cart.cartItems.find(item => item.product.id.toString() === productId.toString());
+        const existingCartItem = cart.cartItems.find(item => item.product.id === productId);
         if(existingCartItem){
             existingCartItem.quantity += quantity;
             existingCartItem.subtotal = existingCartItem.priceAddTime * existingCartItem.quantity;
+            console.log(existingCartItem.priceAddTime);
+            console.log(typeof(existingCartItem.priceAddTime));
+            console.log(existingCartItem.subtotal);
+            console.log(typeof(existingCartItem.subtotal));
             return await this.cartItemRepository.save(existingCartItem);
         }else{
             const newCartItem = this.cartItemRepository.create();

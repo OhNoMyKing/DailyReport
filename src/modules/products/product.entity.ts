@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Category } from "../category/category.entity";
 import { CartItem } from "../cart-item/cart-item.entity";
+import { OrderItem } from "../order-item/order-item.entity";
 
 @Entity({name:'products'})
 export class Product{
@@ -20,4 +21,7 @@ export class Product{
     //relation cart-item
     @OneToMany(()=>CartItem, (cartItem) => cartItem.product)
     cartItem : CartItem;
+
+    @OneToMany(()=> OrderItem, (orderItem) => orderItem.product)
+    orderItem : OrderItem;
 }

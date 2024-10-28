@@ -20,6 +20,10 @@ import * as redisStore from 'cache-manager-ioredis'; // Không cần sửa
 import { ProductSubscriber } from './modules/products/product.subscriber';
 import { CartModule } from './modules/cart/cart.module';
 import { CartItemModule } from './modules/cart-item/cart-item.module';
+import { OrderModule } from './modules/order/order.module';
+import { OrderItemModule } from './modules/order-item/order-item.module';
+import { PaymentModule } from './modules/payment/payment.module';
+import { PaymentMethodModule } from './modules/payment-method/payment.module';
 
 @Module({
   imports: [
@@ -53,7 +57,11 @@ import { CartItemModule } from './modules/cart-item/cart-item.module';
     RoleModule,
     AuthModule,
     CartModule,
-    CartItemModule
+    CartItemModule,
+    OrderModule,
+    OrderItemModule,
+    PaymentModule,
+    PaymentMethodModule
   ],
   controllers: [AppController],
   providers: [AppService, JwtAuthGuard],

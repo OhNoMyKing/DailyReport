@@ -153,5 +153,13 @@ export class ProductService{
             where : {id},
         })
     }
-    
+    //
+    async getProductsToCount() : Promise<number>{
+        const query =`
+            SELECT COUNT(*)
+            FROM products;
+        `
+        const result = await this.entityManager.query(query);
+        return result[0];
+    }
 }

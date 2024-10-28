@@ -26,6 +26,6 @@ export class CartController{
     @UseGuards(JwtAuthGuard)
     async addProductToCart2(@Request() req, @Body() body : {productId: number, quantity: number}){
         const userId = req.user.id;
-        this.cartService.addProductToCart(userId,body.productId,body.quantity);
+        this.cartService.addProductToCart2(userId,body.productId,body.quantity);
     }
 }
