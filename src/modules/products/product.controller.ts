@@ -20,7 +20,7 @@ export class ProductController{
     }
     @Post('update/:id')
     async updateProduct(@Param('id')id : number,@Body() updateProduct : UpdateProductDto){
-        return this.productService.updateProduct2(id,updateProduct);
+        return this.productService.updateProduct(id,updateProduct);
     }
     @Get('count')
     async getProductCount() : Promise<number>{

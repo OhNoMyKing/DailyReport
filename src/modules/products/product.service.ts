@@ -10,7 +10,7 @@ import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import {Redis }  from "cache-manager-ioredis";
 import { RedisService } from "src/cache/redis.service";
 import { UpdateProductDto } from "./dto/update-product.dto";
-
+import { plainToClass } from 'class-transformer';
 @Injectable()
 export class ProductService{
     constructor(
@@ -110,7 +110,14 @@ export class ProductService{
         values.push(id);
         console.log(query);
         const updaeProduct = await this.entityManager.query(query,values);
-        return updaeProduct[0];
+        console.log(updaeProduct);
+        console.log("updateProduct: ",updaeProduct[0]);
+        const productUpdate = plainToClass(Product,updaeProduct[0][0]);
+        productUpdate.category = await this.categoryService.findCategoryById(updaeProduct[0][0].category_id);
+        console.log(productUpdate);
+        console.log(productUpdate instanceof Product);
+        console.log(productUpdate.getDetails()); // Kết quả: "Hôi quas ik - Chua loét (300)"
+        return updaeProduct[0][0];
     }
 
     //update 2

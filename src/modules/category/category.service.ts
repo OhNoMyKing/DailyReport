@@ -68,7 +68,11 @@ export class CategoryService{
         if(!categories){
             throw new Error('Category not found');
         }
-        return Object.assign(new Category(), categories[0]);
+        const result = Object.assign(new Category(), categories[0]);
+        console.log(result);
+        console.log(typeof(result));
+        console.log(result instanceof Category); // true nếu là instance của Category
+        return result;
     }
     //update category
     async updateCategory(id: number, updateCategory : addCategoryDto) : Promise<Category>{
@@ -89,6 +93,8 @@ export class CategoryService{
             throw new Error('Failed to update category');
         }
         const result2 = Object.assign(new Category(), result[0]);
+        console.log(result2);
+        console.log(typeof(result2));
         return result2;
     }
     //findcategoryByname

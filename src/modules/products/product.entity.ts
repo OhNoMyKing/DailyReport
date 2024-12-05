@@ -24,4 +24,8 @@ export class Product{
 
     @OneToMany(()=> OrderItem, (orderItem) => orderItem.product)
     orderItem : OrderItem;
+    //method
+    public getDetails(): string {
+        return `${this.name} - ${this.description} (${this.price})`;
+    }
 }

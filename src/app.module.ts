@@ -24,6 +24,8 @@ import { OrderModule } from './modules/order/order.module';
 import { OrderItemModule } from './modules/order-item/order-item.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { PaymentMethodModule } from './modules/payment-method/payment.module';
+import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
+import { ChatbotModule } from './chatbot/chatbot.module';
 
 @Module({
   imports: [
@@ -61,7 +63,9 @@ import { PaymentMethodModule } from './modules/payment-method/payment.module';
     OrderModule,
     OrderItemModule,
     PaymentModule,
-    PaymentMethodModule
+    PaymentMethodModule,
+    RabbitMQModule,
+    ChatbotModule
   ],
   controllers: [AppController],
   providers: [AppService, JwtAuthGuard],
